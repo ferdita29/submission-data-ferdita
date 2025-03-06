@@ -62,6 +62,6 @@ st.pyplot(fig)
 
 # Conclusion
 st.subheader("📌 Kesimpulan")
-st.write("1. Peminjaman sepeda tertinggi terjadi pada jam sibuk pagi dan sore.")
-st.write("2. Pengguna terdaftar lebih dominan dibanding pengguna kasual.")
-st.write("3. Cuaca dan hari kerja berpengaruh terhadap jumlah peminjaman.")
+st.write("1. Peminjaman sepeda tertinggi terjadi pada jam sibuk pagi (07:00-09:00) dan sore (17:00-19:00).")
+st.write("2. Pengguna terdaftar (registered) lebih banyak dibanding pengguna kasual (casual).")
+st.write("3. Analisis RFM menunjukkan bahwa sebagian besar pelanggan cukup aktif, namun ada beberapa yang jarang menggunakan layanan.")
