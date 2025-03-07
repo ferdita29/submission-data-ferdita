@@ -35,33 +35,52 @@ if weather_option:
     filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
 # Line Chart - Tren Peminjaman Sepeda Per Jam
-st.subheader("⏳ Tren Peminjaman Sepeda Per Jam")
-avg_hourly_rentals = filtered_df.groupby('hr')['cnt'].mean().reset_index()
-fig, ax = plt.subplots(figsize=(10, 5))
-sns.lineplot(x=avg_hourly_rentals['hr'], y=avg_hourly_rentals['cnt'], ax=ax, marker='o')
-plt.xlabel("Jam")
-plt.ylabel("Rata-rata Peminjaman")
-st.pyplot(fig)
+plt.figure(figsize=(12, 6))
+sns.lineplot(x='hr', y='cnt', data=hourly_trend, marker='o', color='b')
+plt.xticks(range(0, 24))
+plt.xlabel("Jam dalam Sehari")
+plt.ylabel("Rata-rata Jumlah Peminjaman")
+plt.title("Tren Peminjaman Sepeda Per Jam")
+plt.grid(True)
+plt.show()
+max_hour = hourly_trend.loc[hourly_trend['cnt'].idxmax()]
+min_hour = hourly_trend.loc[hourly_trend['cnt'].idxmin()]
+print(f"Jam peminjaman tertinggi: {max_hour['hr']} dengan {max_hour['cnt']:.2f} peminjaman.")
+print(f"Jam peminjaman terendah: {min_hour['hr']} dengan {min_hour['cnt']:.2f} peminjaman.")
 
 # Bar Chart - Perbandingan Casual vs Registered
-st.subheader("👥 Perbandingan Pengguna Casual vs Registered")
-user_type = filtered_df[['casual', 'registered']].sum()
-fig, ax = plt.subplots(figsize=(8, 5))
-sns.barplot(x=user_type.index, y=user_type.values, palette=['red', 'blue'], ax=ax)
-plt.xlabel("Jenis Pengguna")
-plt.ylabel("Total Peminjaman")
-st.pyplot(fig)
+user_type_df = pd.DataFrame({'User Type': ['Casual', 'Registered'], 'Count': [user_type['casual'], user_type['registered']]})
+plt.figure(figsize=(8, 5))
+sns.barplot(x='User Type', y='Count', data=user_type_df, palette=['red', 'blue'])
+plt.xlabel("Tipe Pengguna")
+plt.ylabel("Jumlah Peminjaman")
+plt.title("Perbandingan Peminjaman: Casual vs Registered")
+plt.grid(axis='y')
+for index, value in enumerate(user_type_df['Count']):
+    plt.text(index, value + 100, str(value), ha='center', fontsize=12)
+
+plt.show()
+
+# Menampilkan total peminjaman di terminal
+print(f"Total Peminjaman Casual: {user_type['casual']}")
+print(f"Total Peminjaman Registered: {user_type['registered']}")
 
 # Box Plot - Distribusi Peminjaman Sepeda Berdasarkan Hari
-st.subheader("📅 Distribusi Peminjaman Sepeda per Hari")
-fig, ax = plt.subplots(figsize=(10, 5))
-sns.boxplot(x=filtered_df['weekday'], y=filtered_df['cnt'], palette='coolwarm')
-plt.xlabel("Hari dalam Seminggu (0 = Minggu, 6 = Sabtu)")
-plt.ylabel("Jumlah Peminjaman")
-st.pyplot(fig)
+plt.figure(figsize=(10, 5))
+sns.barplot(x='weekday', y='cnt', data=day_trend, palette='coolwarm')
+plt.xlabel("Hari dalam Seminggu (0=Minggu, 6=Sabtu)")
+plt.ylabel("Rata-rata Jumlah Peminjaman")
+plt.title("Tren Peminjaman Sepeda Berdasarkan Hari")
+plt.grid(axis='y')
+plt.show()
+
+#Bar chart - Heatmap kolerasi antar variabel
+plt.figure(figsize=(10, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Heatmap Korelasi Antar Variabel")
+plt.show()
 
 # Conclusion
 st.subheader("📌 Kesimpulan")
-st.write("1. Peminjaman sepeda tertinggi terjadi pada jam sibuk pagi (07:00-09:00) dan sore (17:00-19:00).")
-st.write("2. Pengguna terdaftar (registered) lebih banyak dibanding pengguna kasual (casual).")
-st.write("3. Analisis RFM menunjukkan bahwa sebagian besar pelanggan cukup aktif, namun ada beberapa yang jarang menggunakan layanan.")
+st.write("Pertanyaan 1: Berdasarkan analisis bike sharing dataset waktu Peminjaman sepeda tertinggi terjadi pada jam sibuk pagi (07:00-09:00) dan sore (17:00-19:00).")
+st.write("Pertanyaan 2: Berdasarkan analisis data Pengguna Registered mendominasi peminjaman sepeda dibandingkan dengan Casual dan Pengguna Casual masih cukup signifikan, meskipun jumlahnya lebih kecil dibandingkan pengguna terdaftar.")
