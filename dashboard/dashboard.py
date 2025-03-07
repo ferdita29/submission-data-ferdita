@@ -35,6 +35,7 @@ if weather_option:
     filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
 # Line Chart - Tren Peminjaman Sepeda Per Jam
+hourly_trend = df.groupby('hr')['cnt'].mean().reset_index()
 plt.figure(figsize=(12, 6))
 sns.lineplot(x='hr', y='cnt', data=hourly_trend, marker='o', color='b')
 plt.xticks(range(0, 24))
