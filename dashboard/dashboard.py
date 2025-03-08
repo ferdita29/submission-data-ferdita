@@ -11,7 +11,7 @@ df['dteday'] = pd.to_datetime(df['dteday'])
 
 # Streamlit Layout
 st.title("🚴Bike Sharing Dashboard")
-st.sidebar.header(" Filter Data")
+st.sidebar.header("🗓Filter Data")
 
 # Filter by Year
 year_option = st.sidebar.selectbox("Pilih Tahun", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
@@ -29,8 +29,20 @@ if workingday_option == "Hari Kerja":
 elif workingday_option == "Hari Libur":
     filtered_df = filtered_df[filtered_df['workingday'] == 0]
 
-# Filter by Weather Condition
-weather_option = st.sidebar.multiselect("Kondisi Cuaca", sorted(df['weathersit'].unique()), format_func=lambda x: f"Cuaca {x}")
+# Mapping untuk mengganti angka dengan deskripsi Musim
+weather_mapping = {
+    1: "Semi",
+    2: "Panas",
+    3: "Gugur",
+    4: "Dingin"
+}
+# Menambahkan sidebar filter berdasarkan kondisi musim
+weather_option = st.sidebar.multiselect(
+    "Kondisi Musim",
+    sorted(df['weathersit'].unique()), 
+    format_func=lambda x: weather_mapping.get(x, f"Cuaca {x}")  # Mengubah angka jadi teks
+)
+# Filter DataFrame berdasarkan pilihan cuaca
 if weather_option:
     filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
