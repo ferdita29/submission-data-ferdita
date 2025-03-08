@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load Dataset
-df = pd.read_csv("https://raw.githubusercontent.com/ferdita29/submission-data-ferdita/main/data/hour.csv")
+df = pd.read_csv("https://raw.githubusercontent.com/ferdita29/submission-data-ferdita/main/dashboard/all_data.csv")
 
 # Convert date column to datetime
 df['dteday'] = pd.to_datetime(df['dteday'])
 
 # Streamlit Layout
-st.title("🚴 Bike Sharing Dashboard")
-st.sidebar.header("🔍 Filter Data")
+st.title(" Bike Sharing Dashboard")
+st.sidebar.header(" Filter Data")
 
 # Filter by Year
 year_option = st.sidebar.selectbox("Pilih Tahun", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
@@ -36,16 +36,16 @@ if weather_option:
 
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
 plt.figure(figsize=(12, 6))
-sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="blue")
+sns.histplot(filtered_df["cnt"], bins=30, kde=True, color="blue")
 plt.title("Distribusi Jumlah Peminjaman Sepeda per Jam")
 plt.xlabel("Jumlah Peminjaman")
 plt.ylabel("Frekuensi")
-plt.show()
+st.pyplot(plt)
 
 # Bar chart - Peminjaman sepeda sepanjang hari
 plt.figure(figsize=(12, 6))
 sns.set_style("whitegrid")
-hourly_counts = setdata_hour.groupby("hr", as_index=False)["cnt"].mean()
+hourly_counts = filtered_df.groupby("hr", as_index=False)["cnt"].mean()
 sns.barplot(x="hr", y="cnt", hue="hr", data=hourly_counts, palette="coolwarm", dodge=False)
 
 # Menyesuaikan label sumbu x
@@ -54,27 +54,27 @@ plt.xlabel("Jam dalam Sehari")
 plt.ylabel("Rata-rata Jumlah Peminjaman")
 plt.title("Peminjaman Sepeda per Jam dalam Sehari")
 plt.legend([], [], frameon=False)  # Sembunyikan legend agar tidak redundant
-plt.show()
+st.pyplot(plt)
 
 # Bar chart - Tren Peminjaman sepeda berdasarkan hari dalam seminggu
 plt.figure(figsize=(10, 5))
-# Gunakan `hue="weekday"` agar `palette` dapat diterapkan tanpa warning
-sns.barplot(x="weekday", y="cnt", hue="weekday", data=setdata_hour, palette="coolwarm", dodge=False)
+# Gunakan hue="weekday" agar palette dapat diterapkan tanpa warning
+sns.barplot(x="weekday", y="cnt", hue="weekday", data=filtered_df, palette="coolwarm", dodge=False)
 plt.xlabel("Hari dalam Seminggu")
 plt.ylabel("Jumlah Peminjaman")
 plt.title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
 
-# Pastikan `weekday` berisi angka 0-6 sebelum mengganti labelnya
-if setdata_hour["weekday"].nunique() == 7:
+# Pastikan weekday berisi angka 0-6 sebelum mengganti labelnya
+if filtered_df["weekday"].nunique() == 7:
     plt.xticks(
         ticks=range(7),  # Memastikan label sesuai dengan jumlah hari
         labels=['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
     )
 plt.legend([], [], frameon=False)  # Sembunyikan legend agar tidak redundant
-plt.show()
+st.pyplot(plt)
 
-#Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar
-hourly_usage = setdata_hour.groupby("hr")[["casual", "registered"]].mean()
+# Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar
+hourly_usage = filtered_df.groupby("hr")[["casual", "registered"]].mean()
 
 plt.figure(figsize=(12, 6))
 sns.lineplot(x=hourly_usage.index, y=hourly_usage["casual"], marker="o", label="Casual Users", color="r")
@@ -85,7 +85,7 @@ plt.xlabel("Jam dalam Sehari")
 plt.ylabel("Rata-rata Jumlah Peminjaman")
 plt.title("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
 plt.legend()
-plt.show()
+st.pyplot(plt)
 
 st.subheader(" Conclusion")
 st.write("""
