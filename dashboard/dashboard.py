@@ -34,54 +34,68 @@ weather_option = st.sidebar.multiselect("Kondisi Cuaca", sorted(df['weathersit']
 if weather_option:
     filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
-# Line Chart - Tren Peminjaman Sepeda Per Jam
-hourly_trend = filtered_df.groupby('hr')['cnt'].mean().reset_index()
-fig, ax = plt.subplots(figsize=(12, 6))
-sns.lineplot(x='hr', y='cnt', data=hourly_trend, marker='o', color='b', ax=ax)
-ax.set_xticks(range(0, 24))
-ax.set_xlabel("Jam dalam Sehari")
-ax.set_ylabel("Rata-rata Jumlah Peminjaman")
-ax.set_title("Tren Peminjaman Sepeda Per Jam")
-ax.grid(True)
-st.pyplot(fig)
+# Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
+plt.figure(figsize=(12, 6))
+sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="blue")
+plt.title("Distribusi Jumlah Peminjaman Sepeda per Jam")
+plt.xlabel("Jumlah Peminjaman")
+plt.ylabel("Frekuensi")
+plt.show()
 
-# Menampilkan jam dengan peminjaman tertinggi & terendah
-max_hour = hourly_trend.loc[hourly_trend['cnt'].idxmax()]
-min_hour = hourly_trend.loc[hourly_trend['cnt'].idxmin()]
-st.write(f"📌 Jam peminjaman tertinggi: **{max_hour['hr']}** dengan **{max_hour['cnt']:.2f}** peminjaman.")
-st.write(f"📌 Jam peminjaman terendah: **{min_hour['hr']}** dengan **{min_hour['cnt']:.2f}** peminjaman.")
+# Bar chart - Peminjaman sepeda sepanjang hari
+plt.figure(figsize=(12, 6))
+sns.set_style("whitegrid")
+hourly_counts = setdata_hour.groupby("hr", as_index=False)["cnt"].mean()
+sns.barplot(x="hr", y="cnt", hue="hr", data=hourly_counts, palette="coolwarm", dodge=False)
 
-# Bar Chart - Perbandingan Casual vs Registered
-user_type = filtered_df[['casual', 'registered']].sum()
-user_type_df = pd.DataFrame({'User Type': ['Casual', 'Registered'], 'Count': [user_type['casual'], user_type['registered']]})
+# Menyesuaikan label sumbu x
+plt.xticks(ticks=range(0, 24), labels=[f"{i}:00" for i in range(0, 24)], rotation=45)
+plt.xlabel("Jam dalam Sehari")
+plt.ylabel("Rata-rata Jumlah Peminjaman")
+plt.title("Peminjaman Sepeda per Jam dalam Sehari")
+plt.legend([], [], frameon=False)  # Sembunyikan legend agar tidak redundant
+plt.show()
 
-fig, ax = plt.subplots(figsize=(8, 5))
-sns.barplot(x='User Type', y='Count', data=user_type_df, palette=['red', 'blue'], ax=ax)
-ax.set_xlabel("Tipe Pengguna")
-ax.set_ylabel("Jumlah Peminjaman")
-ax.set_title("Perbandingan Peminjaman: Casual vs Registered")
-ax.grid(axis='y')
-st.pyplot(fig)
+# Bar chart - Tren Peminjaman sepeda berdasarkan hari dalam seminggu
+plt.figure(figsize=(10, 5))
+# Gunakan `hue="weekday"` agar `palette` dapat diterapkan tanpa warning
+sns.barplot(x="weekday", y="cnt", hue="weekday", data=setdata_hour, palette="coolwarm", dodge=False)
+plt.xlabel("Hari dalam Seminggu")
+plt.ylabel("Jumlah Peminjaman")
+plt.title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
 
-# Box Plot - Distribusi Peminjaman Sepeda Berdasarkan Hari
-day_trend = filtered_df.groupby('weekday')['cnt'].mean().reset_index()
-fig, ax = plt.subplots(figsize=(10, 5))
-sns.barplot(x='weekday', y='cnt', data=day_trend, palette='coolwarm', ax=ax)
-ax.set_xlabel("Hari dalam Seminggu (0=Minggu, 6=Sabtu)")
-ax.set_ylabel("Rata-rata Jumlah Peminjaman")
-ax.set_title("Tren Peminjaman Sepeda Berdasarkan Hari")
-ax.grid(axis='y')
-st.pyplot(fig)
+# Pastikan `weekday` berisi angka 0-6 sebelum mengganti labelnya
+if setdata_hour["weekday"].nunique() == 7:
+    plt.xticks(
+        ticks=range(7),  # Memastikan label sesuai dengan jumlah hari
+        labels=['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+    )
+plt.legend([], [], frameon=False)  # Sembunyikan legend agar tidak redundant
+plt.show()
 
-# Heatmap - Korelasi Antar Variabel
-correlation_matrix = filtered_df.corr()
-fig, ax = plt.subplots(figsize=(10, 6))
-sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
-ax.set_title("Heatmap Korelasi Antar Variabel")
-st.pyplot(fig)
+#Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar
+hourly_usage = setdata_hour.groupby("hr")[["casual", "registered"]].mean()
 
-# Conclusion
-st.subheader("📌 Kesimpulan")
-st.write("**Pertanyaan 1:** Berdasarkan analisis bike sharing dataset, waktu Peminjaman sepeda tertinggi terjadi pada jam sibuk pagi (07:00-09:00) dan sore (17:00-19:00).")
-st.write("**Pertanyaan 2:** Berdasarkan analisis data, pengguna **Registered** mendominasi peminjaman sepeda dibandingkan dengan **Casual**. Namun, pengguna Casual masih cukup signifikan.")
+plt.figure(figsize=(12, 6))
+sns.lineplot(x=hourly_usage.index, y=hourly_usage["casual"], marker="o", label="Casual Users", color="r")
+sns.lineplot(x=hourly_usage.index, y=hourly_usage["registered"], marker="o", label="Registered Users", color="b")
 
+plt.xticks(ticks=range(0, 24), labels=[f"{i}:00" for i in range(0, 24)], rotation=45)
+plt.xlabel("Jam dalam Sehari")
+plt.ylabel("Rata-rata Jumlah Peminjaman")
+plt.title("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
+plt.legend()
+plt.show()
+
+st.subheader(" Conclusion")
+st.write("""
+## Conclusion Pertanyaan 1:
+- Distribusi jumlah peminjaman sepeda per jam menunjukkan pola yang cenderung tidak merata, dengan beberapa jam memiliki peminjaman yang jauh lebih tinggi dibandingkan lainnya. Grafik menunjukkan bahwa sebagian besar peminjaman berada pada jumlah tertentu, sementara ada juga beberapa jam dengan peminjaman yang sangat tinggi atau sangat rendah. Pola ini bisa mengindikasikan adanya jam-jam sibuk, seperti pagi atau sore hari saat orang berangkat dan pulang kerja.
+- Peminjaman sepeda per jam dalam sehari cenderung rendah di pagi hari, mulai meningkat pada jam kerja (08:00 - 09:00), dan mencapai puncaknya pada sore hingga malam hari (17:00 - 19:00). Ini menunjukkan bahwa sepeda banyak digunakan untuk perjalanan kerja atau pulang kantor. Setelah jam malam, jumlah peminjaman kembali menurun.
+- Peminjaman sepeda berdasarkan hari menunjukkan tren lebih tinggi pada hari kerja dibandingkan akhir pekan, mengindikasikan bahwa penggunaan sepeda lebih banyak untuk aktivitas rutin sehari-hari dibandingkan rekreasi.
+""")
+
+st.write("""
+## Conclusion Pertanyaan 2:
+Grafik diatas dapat disimpulkan bahwa Pengguna terdaftar (registered) cenderung meminjam sepeda lebih banyak dibandingkan pengguna kasual (casual), terutama pada jam-jam sibuk seperti pagi dan sore hari, kemungkinan saat mereka pergi dan pulang kerja. Sementara itu, pengguna kasual lebih sering meminjam sepeda pada siang hingga sore hari, mungkin untuk rekreasi. Hal ini menunjukkan bahwa sepeda digunakan tidak hanya sebagai alat transportasi tetapi juga untuk aktivitas santai.
+""")
