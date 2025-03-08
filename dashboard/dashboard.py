@@ -10,7 +10,7 @@ df = pd.read_csv("https://raw.githubusercontent.com/ferdita29/submission-data-fe
 df['dteday'] = pd.to_datetime(df['dteday'])
 
 # Streamlit Layout
-st.title(" Bike Sharing Dashboard")
+st.title("🚴Bike Sharing Dashboard")
 st.sidebar.header(" Filter Data")
 
 # Filter by Year
