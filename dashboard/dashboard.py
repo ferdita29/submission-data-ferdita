@@ -20,8 +20,7 @@ with st.sidebar:
 
     # Filter dataset 'setdata_hour' sesuai dengan filter di sidebar
     filtered_hour = setdata_hour.copy()
-    filtered_hour = filtered_hour[filtered_hour["dteday"].dt.year == (2011 + year_option)]
-
+    
     # Filter by Year
     year_option = st.selectbox("Pilih Tahun", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
     filtered_df = df[df['yr'] == year_option]
