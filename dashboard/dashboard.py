@@ -15,7 +15,7 @@ df['dteday'] = pd.to_datetime(df['dteday'])
 st.title("🚴Bike Sharing Dashboard")
 #Menambahkan logo
 st.sidebar.header("🗓Filter Data")
-st.image("images/BikeRental.jpg")
+st.image("BikeRental.jpg")
 
 # Filter by Year
 year_option = st.sidebar.selectbox("Pilih Tahun", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
