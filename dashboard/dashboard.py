@@ -4,10 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load Dataset
+setdata_hour = pd.read_csv("data/hour.csv")
 df = pd.read_csv("https://raw.githubusercontent.com/ferdita29/submission-data-ferdita/main/dashboard/all_data.csv")
-
-# Pastikan dataset memiliki kolom jam
-setdata_hour = df.groupby("hr", as_index=False)[["cnt", "casual", "registered", "weekday"]].mean()
 
 # Convert date column to datetime
 df['dteday'] = pd.to_datetime(df['dteday'])
@@ -15,7 +13,7 @@ df['dteday'] = pd.to_datetime(df['dteday'])
 # Streamlit Layout
 st.title("🚴Bike Sharing Dashboard")
 #Menambahkan logo
-st.image("BikeRental.jpg"),st.sidebar.header("🗓Filter Data")
+st.image("BikeRental.jpg") , st.sidebar.header("🗓Filter Data")
 
 # Filter by Year
 year_option = st.sidebar.selectbox("Pilih Tahun", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
