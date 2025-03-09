@@ -13,42 +13,36 @@ df['dteday'] = pd.to_datetime(df['dteday'])
 
 # Streamlit Layout
 st.title("🚴Bike Sharing Dashboard")
-#Menambahkan logo
-st.sidebar.header("🗓Filter Data")
-st.image("BikeRental.jpg")
+# Sidebar
+with st.sidebar:
+    st.image("BikeRental.jpg")
+    st.header("🗓Filter Data")
 
-# Filter by Year
-year_option = st.sidebar.selectbox("Pilih Tahun", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
-filtered_df = df[df['yr'] == year_option]
+    # Filter by Year
+    year_option = st.selectbox("Pilih Tahun", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
+    filtered_df = df[df['yr'] == year_option]
 
-# Filter by Month
-month_option = st.sidebar.multiselect("Pilih Bulan", sorted(df['mnth'].unique()), format_func=lambda x: f"Bulan {x}")
-if month_option:
-    filtered_df = filtered_df[filtered_df['mnth'].isin(month_option)]
+    # Filter by Month
+    month_option = st.multiselect("Pilih Bulan", sorted(df['mnth'].unique()), format_func=lambda x: f"Bulan {x}")
+    if month_option:
+        filtered_df = filtered_df[filtered_df['mnth'].isin(month_option)]
 
-# Filter by Working Day
-workingday_option = st.sidebar.radio("Hari Kerja atau Libur?", ["Semua", "Hari Kerja", "Hari Libur"])
-if workingday_option == "Hari Kerja":
-    filtered_df = filtered_df[filtered_df['workingday'] == 1]
-elif workingday_option == "Hari Libur":
-    filtered_df = filtered_df[filtered_df['workingday'] == 0]
+    # Filter by Working Day
+    workingday_option = st.radio("Hari Kerja atau Libur?", ["Semua", "Hari Kerja", "Hari Libur"])
+    if workingday_option == "Hari Kerja":
+        filtered_df = filtered_df[filtered_df['workingday'] == 1]
+    elif workingday_option == "Hari Libur":
+        filtered_df = filtered_df[filtered_df['workingday'] == 0]
 
-# Mapping untuk mengganti angka dengan deskripsi Musim
-weather_mapping = {
-    1: "Semi",
-    2: "Panas",
-    3: "Gugur",
-    4: "Dingin"
-}
-# Menambahkan sidebar filter berdasarkan kondisi musim
-weather_option = st.sidebar.multiselect(
-    "Kategori Musim",
-    sorted(df['weathersit'].unique()), 
-    format_func=lambda x: weather_mapping.get(x, f"Cuaca {x}")  # Mengubah angka jadi teks
-)
-# Filter DataFrame berdasarkan pilihan musim
-if weather_option:
-    filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
+    # Mapping untuk mengganti angka dengan deskripsi Musim
+    weather_mapping = {1: "Semi", 2: "Panas", 3: "Gugur", 4: "Dingin"}
+    weather_option = st.multiselect(
+        "Kategori Musim",
+        sorted(df['weathersit'].unique()),
+        format_func=lambda x: weather_mapping.get(x, f"Cuaca {x}")
+    )
+    if weather_option:
+        filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
 sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="#0D47A1" )
