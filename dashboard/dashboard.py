@@ -46,11 +46,12 @@ with st.sidebar:
 
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
 fig, ax = plt.subplots()
-sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
+sns.histplot(filtered_df["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
 ax.set_title("Distribusi Jumlah Peminjaman Sepeda per Jam")
 ax.set_xlabel("Jumlah Peminjaman")
 ax.set_ylabel("Frekuensi")
 st.pyplot(fig)
+
 
 # Bar chart - Peminjaman sepeda sepanjang hari
 st.subheader("Peminjaman Sepeda per Jam dalam Sehari")
