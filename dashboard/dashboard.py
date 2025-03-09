@@ -45,59 +45,55 @@ with st.sidebar:
         filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
-sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="#0D47A1" )
-plt.title("Distribusi Jumlah Peminjaman Sepeda per Jam")
-plt.xlabel("Jumlah Peminjaman")
-plt.ylabel("Frekuensi")
-plt.show()
+fig, ax = plt.subplots()
+sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
+ax.set_title("Distribusi Jumlah Peminjaman Sepeda per Jam")
+ax.set_xlabel("Jumlah Peminjaman")
+ax.set_ylabel("Frekuensi")
+st.pyplot(fig)
 
 # Bar chart - Peminjaman sepeda sepanjang hari
-plt.figure(figsize=(12, 6))
+st.subheader("Peminjaman Sepeda per Jam dalam Sehari")
+fig, ax = plt.subplots(figsize=(12, 6))
 sns.set_style("whitegrid")
-# Menghitung rata-rata peminjaman per jam
 hourly_counts = setdata_hour.groupby("hr", as_index=False)["cnt"].mean()
-# Menentukan jam dengan peminjaman tertinggi
 max_val = hourly_counts["cnt"].max()
-# Membuat bar chart secara manual dengan warna yang ditentukan
-bars = plt.bar(hourly_counts["hr"], hourly_counts["cnt"], 
-               color=["#0D47A1" if cnt == max_val else "#BBDEFB" for cnt in hourly_counts["cnt"]])
-# Menyesuaikan label sumbu x
-plt.xticks(ticks=range(0, 24), labels=[f"{i}:00" for i in range(0, 24)], rotation=45)
-plt.xlabel("Jam dalam Sehari")
-plt.ylabel("Rata-rata Jumlah Peminjaman")
-plt.title("Peminjaman Sepeda per Jam dalam Sehari")
-plt.show()
+ax.bar(hourly_counts["hr"], hourly_counts["cnt"], 
+       color=["#0D47A1" if cnt == max_val else "#BBDEFB" for cnt in hourly_counts["cnt"]])
+ax.set_xticks(range(0, 24))
+ax.set_xticklabels([f"{i}:00" for i in range(0, 24)], rotation=45)
+ax.set_xlabel("Jam dalam Sehari")
+ax.set_ylabel("Rata-rata Jumlah Peminjaman")
+ax.set_title("Peminjaman Sepeda per Jam dalam Sehari")
+st.pyplot(fig)
 
 # Bar chart - Tren Peminjaman sepeda berdasarkan hari dalam seminggu
-plt.figure(figsize=(10, 5))
-# Menambahkan hue agar palette bisa digunakan tanpa warning
+st.subheader("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
+fig, ax = plt.subplots(figsize=(10, 5))
 sns.barplot(x="weekday", y="cnt", hue="weekday", data=setdata_hour, 
             palette=["#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#90CAF9", "#D3D3D3", "#D3D3D3"], 
-            dodge=False, legend=False)
-plt.xlabel("Hari dalam Seminggu")
-plt.ylabel("Jumlah Peminjaman")
-plt.title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
-# Pastikan weekday berisi angka 0-6 sebelum mengganti labelnya
+            dodge=False, legend=False, ax=ax)
+ax.set_xlabel("Hari dalam Seminggu")
+ax.set_ylabel("Jumlah Peminjaman")
+ax.set_title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
 if setdata_hour["weekday"].nunique() == 7:
-    plt.xticks(
-        ticks=range(7),  # Memastikan label sesuai dengan jumlah hari
-        labels=['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
-    )
-plt.show()
+    ax.set_xticks(range(7))
+    ax.set_xticklabels(['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'])
+st.pyplot(fig)
 
 # Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar
+st.subheader("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
 hourly_usage = setdata_hour.groupby("hr")[["casual", "registered"]].mean()
-
-plt.figure(figsize=(12, 6))
-sns.lineplot(x=hourly_usage.index, y=hourly_usage["casual"], marker="o", label="Casual Users", color="red")
-sns.lineplot(x=hourly_usage.index, y=hourly_usage["registered"], marker="o", label="Registered Users", color="blue")
-
-plt.xticks(ticks=range(0, 24), labels=[f"{i}:00" for i in range(0, 24)], rotation=45)
-plt.xlabel("Jam dalam Sehari")
-plt.ylabel("Rata-rata Jumlah Peminjaman")
-plt.title("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
-plt.legend()
-plt.show()
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.lineplot(x=hourly_usage.index, y=hourly_usage["casual"], marker="o", label="Casual Users", color="red", ax=ax)
+sns.lineplot(x=hourly_usage.index, y=hourly_usage["registered"], marker="o", label="Registered Users", color="blue", ax=ax)
+ax.set_xticks(range(0, 24))
+ax.set_xticklabels([f"{i}:00" for i in range(0, 24)], rotation=45)
+ax.set_xlabel("Jam dalam Sehari")
+ax.set_ylabel("Rata-rata Jumlah Peminjaman")
+ax.set_title("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
+ax.legend()
+st.pyplot(fig)
 
 st.subheader(" Conclusion")
 st.write("""
