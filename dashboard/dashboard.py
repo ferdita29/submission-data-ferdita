@@ -40,66 +40,68 @@ weather_mapping = {
 }
 # Menambahkan sidebar filter berdasarkan kondisi musim
 weather_option = st.sidebar.multiselect(
-    "Kondisi Musim",
+    "Kategori Musim",
     sorted(df['weathersit'].unique()), 
     format_func=lambda x: weather_mapping.get(x, f"Cuaca {x}")  # Mengubah angka jadi teks
 )
-# Filter DataFrame berdasarkan pilihan cuaca
+# Filter DataFrame berdasarkan pilihan musim
 if weather_option:
     filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
-plt.figure(figsize=(12, 6))
-sns.histplot(filtered_df["cnt"], bins=30, kde=True, color="blue")
+sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="#0D47A1" )
 plt.title("Distribusi Jumlah Peminjaman Sepeda per Jam")
 plt.xlabel("Jumlah Peminjaman")
 plt.ylabel("Frekuensi")
-st.pyplot(plt)
+plt.show()
 
 # Bar chart - Peminjaman sepeda sepanjang hari
 plt.figure(figsize=(12, 6))
 sns.set_style("whitegrid")
-hourly_counts = filtered_df.groupby("hr", as_index=False)["cnt"].mean()
-sns.barplot(x="hr", y="cnt", hue="hr", data=hourly_counts, palette="coolwarm", dodge=False)
-
+# Menghitung rata-rata peminjaman per jam
+hourly_counts = setdata_hour.groupby("hr", as_index=False)["cnt"].mean()
+# Menentukan jam dengan peminjaman tertinggi
+max_val = hourly_counts["cnt"].max()
+# Membuat bar chart secara manual dengan warna yang ditentukan
+bars = plt.bar(hourly_counts["hr"], hourly_counts["cnt"], 
+               color=["#0D47A1" if cnt == max_val else "#BBDEFB" for cnt in hourly_counts["cnt"]])
 # Menyesuaikan label sumbu x
 plt.xticks(ticks=range(0, 24), labels=[f"{i}:00" for i in range(0, 24)], rotation=45)
 plt.xlabel("Jam dalam Sehari")
 plt.ylabel("Rata-rata Jumlah Peminjaman")
 plt.title("Peminjaman Sepeda per Jam dalam Sehari")
-plt.legend([], [], frameon=False)  # Sembunyikan legend agar tidak redundant
-st.pyplot(plt)
+plt.show()
 
 # Bar chart - Tren Peminjaman sepeda berdasarkan hari dalam seminggu
 plt.figure(figsize=(10, 5))
-# Gunakan hue="weekday" agar palette dapat diterapkan tanpa warning
-sns.barplot(x="weekday", y="cnt", hue="weekday", data=filtered_df, palette="coolwarm", dodge=False)
+# Menambahkan hue agar palette bisa digunakan tanpa warning
+sns.barplot(x="weekday", y="cnt", hue="weekday", data=setdata_hour, 
+            palette=["#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#90CAF9", "#D3D3D3", "#D3D3D3"], 
+            dodge=False, legend=False)
 plt.xlabel("Hari dalam Seminggu")
 plt.ylabel("Jumlah Peminjaman")
 plt.title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
-
-# Pastikan weekday berisi angka 0-6 sebelum mengganti labelnya
-if filtered_df["weekday"].nunique() == 7:
+# Pastikan `weekday` berisi angka 0-6 sebelum mengganti labelnya
+if setdata_hour["weekday"].nunique() == 7:
     plt.xticks(
         ticks=range(7),  # Memastikan label sesuai dengan jumlah hari
         labels=['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
     )
-plt.legend([], [], frameon=False)  # Sembunyikan legend agar tidak redundant
-st.pyplot(plt)
+plt.show()
 
 # Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar
-hourly_usage = filtered_df.groupby("hr")[["casual", "registered"]].mean()
+hourly_usage = setdata_hour.groupby("hr")[["casual", "registered"]].mean()
 
 plt.figure(figsize=(12, 6))
-sns.lineplot(x=hourly_usage.index, y=hourly_usage["casual"], marker="o", label="Casual Users", color="r")
-sns.lineplot(x=hourly_usage.index, y=hourly_usage["registered"], marker="o", label="Registered Users", color="b")
+sns.lineplot(x=hourly_usage.index, y=hourly_usage["casual"], marker="o", label="Casual Users", color="red")
+sns.lineplot(x=hourly_usage.index, y=hourly_usage["registered"], marker="o", label="Registered Users", color="blue")
 
 plt.xticks(ticks=range(0, 24), labels=[f"{i}:00" for i in range(0, 24)], rotation=45)
 plt.xlabel("Jam dalam Sehari")
 plt.ylabel("Rata-rata Jumlah Peminjaman")
 plt.title("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
 plt.legend()
-st.pyplot(plt)
+plt.show()
 
 st.subheader(" Conclusion")
 st.write("""
