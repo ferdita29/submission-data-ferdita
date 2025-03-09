@@ -6,6 +6,9 @@ import seaborn as sns
 # Load Dataset
 df = pd.read_csv("https://raw.githubusercontent.com/ferdita29/submission-data-ferdita/main/dashboard/all_data.csv")
 
+# Pastikan dataset memiliki kolom jam
+setdata_hour = df.groupby("hr", as_index=False)[["cnt", "casual", "registered", "weekday"]].mean()
+
 # Convert date column to datetime
 df['dteday'] = pd.to_datetime(df['dteday'])
 
@@ -46,9 +49,6 @@ weather_option = st.sidebar.multiselect(
 # Filter DataFrame berdasarkan pilihan musim
 if weather_option:
     filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
-    
-# Pastikan dataset memiliki kolom jam
-setdata_hour = df.groupby("hr", as_index=False)[["cnt", "casual", "registered", "weekday"]].mean()
 
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
 sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="#0D47A1" )
