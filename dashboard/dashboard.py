@@ -88,9 +88,11 @@ st.pyplot(fig)
 
 # Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar
 filtered_hourly_usage = filtered_hour.groupby("hr")[["casual", "registered"]].mean()
+
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.lineplot(x=filtered_hourly_usage.index, y=filtered_hourly_usage["casual"], marker="o", label="Casual Users", color="red", ax=ax)
 sns.lineplot(x=filtered_hourly_usage.index, y=filtered_hourly_usage["registered"], marker="o", label="Registered Users", color="blue", ax=ax)
+
 ax.set_xticks(range(0, 24))
 ax.set_xticklabels([f"{i}:00" for i in range(0, 24)], rotation=45)
 ax.set_xlabel("Jam dalam Sehari")
