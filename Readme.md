@@ -1,5 +1,10 @@
 # 🚴 Bike Sharing Dashboard
 
+## Deskripsi
+```
+Proyek ini bertujuan untuk menganalisis data pada Bike Sharing Dataset untuk menghasilkan wawasan dan informasi yang berguna.
+```
+
 ## Setup Environment - Anaconda
 ```
 conda create --name main-ds python=3.13.2

@@ -11,6 +11,8 @@ df['dteday'] = pd.to_datetime(df['dteday'])
 
 # Streamlit Layout
 st.title("🚴Bike Sharing Dashboard")
+#Menambahkan logo
+st.image("BikeRental.jpg")
 st.sidebar.header("🗓Filter Data")
 
 # Filter by Year
