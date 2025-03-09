@@ -60,7 +60,7 @@ st.pyplot(fig)
 st.subheader("Peminjaman Sepeda per Jam dalam Sehari")
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.set_style("whitegrid")
-hourly_counts = setdata_hour.groupby("hr", as_index=False)["cnt"].mean()
+hourly_counts = filtered_hour.groupby("hr", as_index=False)["cnt"].mean()
 max_val = hourly_counts["cnt"].max()
 ax.bar(hourly_counts["hr"], hourly_counts["cnt"], 
        color=["#0D47A1" if cnt == max_val else "#BBDEFB" for cnt in hourly_counts["cnt"]])
