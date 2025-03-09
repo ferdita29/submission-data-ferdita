@@ -69,25 +69,25 @@ ax.set_title("Peminjaman Sepeda per Jam dalam Sehari")
 st.pyplot(fig)
 
 # Bar chart - Tren Peminjaman sepeda berdasarkan hari dalam seminggu
-st.subheader("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
 fig, ax = plt.subplots(figsize=(10, 5))
-sns.barplot(x="weekday", y="cnt", hue="weekday", data=setdata_hour, 
+sns.barplot(x="weekday", y="cnt", hue="weekday", data=filtered_hour, 
             palette=["#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#90CAF9", "#D3D3D3", "#D3D3D3"], 
             dodge=False, legend=False, ax=ax)
 ax.set_xlabel("Hari dalam Seminggu")
 ax.set_ylabel("Jumlah Peminjaman")
 ax.set_title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
-if setdata_hour["weekday"].nunique() == 7:
+
+if filtered_hour["weekday"].nunique() == 7:
     ax.set_xticks(range(7))
     ax.set_xticklabels(['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'])
 st.pyplot(fig)
 
+
 # Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar
-st.subheader("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
-hourly_usage = setdata_hour.groupby("hr")[["casual", "registered"]].mean()
+filtered_hourly_usage = filtered_hour.groupby("hr")[["casual", "registered"]].mean()
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.lineplot(x=hourly_usage.index, y=hourly_usage["casual"], marker="o", label="Casual Users", color="red", ax=ax)
-sns.lineplot(x=hourly_usage.index, y=hourly_usage["registered"], marker="o", label="Registered Users", color="blue", ax=ax)
+sns.lineplot(x=filtered_hourly_usage.index, y=filtered_hourly_usage["casual"], marker="o", label="Casual Users", color="red", ax=ax)
+sns.lineplot(x=filtered_hourly_usage.index, y=filtered_hourly_usage["registered"], marker="o", label="Registered Users", color="blue", ax=ax)
 ax.set_xticks(range(0, 24))
 ax.set_xticklabels([f"{i}:00" for i in range(0, 24)], rotation=45)
 ax.set_xlabel("Jam dalam Sehari")
@@ -95,6 +95,7 @@ ax.set_ylabel("Rata-rata Jumlah Peminjaman")
 ax.set_title("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
 ax.legend()
 st.pyplot(fig)
+
 
 st.subheader(" Conclusion")
 st.write("""
