@@ -31,5 +31,5 @@ pip install -r requirements.txt
 ## Run steamlit app
 #### Setelah environment siap, jalankan Streamlit untuk melihat dashboard:
 ```
-streamlit run dashboard.py
+streamlit run dashboard/dashboard.py
 ```
