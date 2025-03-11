@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load Dataset
-setdata_hour = pd.read_csv("data/hour.csv")
+setdata_hour = pd.read_csv("../data/hour.csv")
 df = pd.read_csv("https://raw.githubusercontent.com/ferdita29/submission-data-ferdita/main/dashboard/all_data.csv")
 
 # Convert date column to datetime
