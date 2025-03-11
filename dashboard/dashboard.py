@@ -101,8 +101,3 @@ if not filtered_hour.empty:
     ax.grid(True, linestyle="--", alpha=0.6)
     st.pyplot(fig)
     
-
-st.write("""
-##### 💡Conclusion:
-Peminjaman sepeda mencapai puncaknya pada jam kerja dan sore hari serta Pengguna terdaftar di jam sibuk, sedangkan pengguna kasual lebih banyak meminjam di waktu luang.
-""")
