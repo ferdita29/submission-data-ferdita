@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
@@ -13,7 +15,7 @@ setdata_hour['dteday'] = pd.to_datetime(setdata_hour['dteday'])
 df['dteday'] = pd.to_datetime(df['dteday'])
 
 # Streamlit Layout
-st.title("🚴Bike Sharing Dashboard")
+st.title("🚴Bike Sharing Dashboard🚴")
 
 # Sidebar Filters
 with st.sidebar:
@@ -41,42 +43,60 @@ with st.sidebar:
         filtered_df = filtered_df[filtered_df['workingday'] == 1]
     elif workingday_option == "Hari Libur":
         filtered_df = filtered_df[filtered_df['workingday'] == 0]
-    
-    # Filter by Season
-    weather_mapping = {1: "Semi", 2: "Panas", 3: "Gugur", 4: "Dingin"}
-    weather_option = st.multiselect("Kategori Musim", sorted(df['weathersit'].unique()),
-                                    format_func=lambda x: weather_mapping.get(x, f"Cuaca {x}"))
-    if weather_option:
-        filtered_df = filtered_df[filtered_df['weathersit'].isin(weather_option)]
 
-# Histogram - Distribusi Jumlah Peminjaman Sepeda
-fig = px.histogram(filtered_df, x="cnt", nbins=30, title="Distribusi Jumlah Peminjaman Sepeda per Jam",
-                   color_discrete_sequence=["#0D47A1"], opacity=0.7)
-st.plotly_chart(fig)
+# Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
+if not filtered_df.empty:
+    fig, ax = plt.subplots()
+    sns.histplot(filtered_df["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
+    ax.set_title("Distribusi Jumlah Peminjaman Sepeda per Jam")
+    ax.set_xlabel("Jumlah Peminjaman")
+    ax.set_ylabel("Frekuensi")
+    st.pyplot(fig)
 
-# Line Chart - Peminjaman Sepeda Sepanjang Hari
-hourly_counts = filtered_hour.groupby("hr", as_index=False)["cnt"].mean()
-fig = px.bar(hourly_counts, x="hr", y="cnt", title="Peminjaman Sepeda per Jam dalam Sehari",
-             labels={"hr": "Jam dalam Sehari", "cnt": "Rata-rata Jumlah Peminjaman"},
-             color="cnt", color_continuous_scale="Blues")
-st.plotly_chart(fig)
+# Bar chart - Peminjaman sepeda sepanjang hari (Diperbarui)
+if not filtered_hour.empty:
+    st.subheader("Peminjaman Sepeda per Jam dalam Sehari")
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.set_style("whitegrid")
+    hourly_counts = filtered_hour.groupby("hr", as_index=False)["cnt"].mean().sort_values("hr")
+    max_val = hourly_counts["cnt"].max()
+    ax.bar(hourly_counts["hr"], hourly_counts["cnt"], 
+           color=["#0D47A1" if cnt == max_val else "#BBDEFB" for cnt in hourly_counts["cnt"]])
+    ax.set_xticks(range(0, 24))
+    ax.set_xticklabels([f"{i}:00" for i in range(0, 24)], rotation=45)
+    ax.set_xlabel("Jam dalam Sehari")
+    ax.set_ylabel("Rata-rata Jumlah Peminjaman")
+    ax.set_title("Peminjaman Sepeda per Jam dalam Sehari")
+    st.pyplot(fig)
 
-# Bar Chart - Tren Peminjaman Sepeda Berdasarkan Hari dalam Seminggu
-fig = px.bar(filtered_hour, x="weekday", y="cnt", title="Rata-rata Peminjaman Sepeda Berdasarkan Hari",
-             labels={"weekday": "Hari dalam Seminggu", "cnt": "Jumlah Peminjaman"},
-             color="cnt", color_continuous_scale="Blues")
-st.plotly_chart(fig)
+# Bar chart - Tren Peminjaman sepeda berdasarkan hari dalam seminggu
+if not filtered_hour.empty:
+    fig, ax = plt.subplots(figsize=(10, 5))
+    weekday_counts = filtered_hour.groupby("weekday", as_index=False)["cnt"].mean()
+    sns.barplot(x="weekday", y="cnt", hue="weekday", data=filtered_hour, 
+                palette=["#90CAF9" if i == 4 else "#D3D3D3" for i in range(7)], 
+                dodge=False, legend=False, ax=ax)
+    ax.set_xlabel("Hari dalam Seminggu")
+    ax.set_ylabel("Jumlah Peminjaman")
+    ax.set_title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
+    ax.set_xticks(range(7))
+    ax.set_xticklabels(["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"])
+    st.pyplot(fig)
 
-# Line Chart - Perbandingan Pengguna Casual vs Registered
-filtered_hourly_usage = filtered_hour.groupby("hr")[["casual", "registered"]].mean().reset_index()
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=filtered_hourly_usage["hr"], y=filtered_hourly_usage["casual"],
-                         mode='lines+markers', name='Casual Users', line=dict(color='red')))
-fig.add_trace(go.Scatter(x=filtered_hourly_usage["hr"], y=filtered_hourly_usage["registered"],
-                         mode='lines+markers', name='Registered Users', line=dict(color='blue')))
-fig.update_layout(title="Perbandingan Peminjaman Sepeda: Casual vs Registered Users",
-                  xaxis_title="Jam dalam Sehari", yaxis_title="Rata-rata Jumlah Peminjaman")
-st.plotly_chart(fig)
+# Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar (Diperbarui)
+if not filtered_hour.empty:
+    filtered_hourly_usage = filtered_hour.groupby("hr")[["casual", "registered"]].mean()
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(x=filtered_hourly_usage.index, y=filtered_hourly_usage["casual"], marker="o", label="Casual Users", color="red", ax=ax)
+    sns.lineplot(x=filtered_hourly_usage.index, y=filtered_hourly_usage["registered"], marker="o", label="Registered Users", color="blue", ax=ax)
+    ax.set_xticks(range(0, 24))
+    ax.set_xticklabels([f"{i}:00" for i in range(0, 24)], rotation=45)
+    ax.set_xlabel("Jam dalam Sehari")
+    ax.set_ylabel("Rata-rata Jumlah Peminjaman")
+    ax.set_title("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
+    ax.legend()
+    ax.grid(True, linestyle="--", alpha=0.6)
+    st.pyplot(fig)
 
 st.subheader(" Conclusion")
 st.write("""
