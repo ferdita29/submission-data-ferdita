@@ -108,7 +108,7 @@ if not filtered_hour.empty:
     # Menyesuaikan label sumbu x
     ax.set_xlabel("Hari dalam Seminggu")
     ax.set_ylabel("Rata-rata Jumlah Peminjaman")
-    ax.set_title(f"Rata-rata Peminjaman Sepeda Berdasarkan Hari ({start_date} - {end_date})")
+    ax.set_title(f"Rata-rata Peminjaman Sepeda Berdasarkan Hari")
 
     st.pyplot(fig)
 
