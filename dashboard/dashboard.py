@@ -44,15 +44,13 @@ with st.sidebar:
     elif workingday_option == "Hari Libur":
         filtered_df = filtered_df[filtered_df['workingday'] == 0]
 
-# Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
-if not filtered_df.empty:
-    st.subheader ("Distribusi Jumlah Peminjaman Sepeda per Jam")
-    fig, ax = plt.subplots()
-    sns.histplot(filtered_df["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
-    ax.set_xlabel("Jumlah Peminjaman")
-    ax.set_ylabel("Frekuensi")
-    ax.set_title("Distribusi Jumlah Peminjaman Sepeda per Jam")
-    st.pyplot(fig)
+# Distribusi jumlah peminjaman sepeda per jam
+plt.figure(figsize=(12, 6))
+sns.histplot(setdata_hour["cnt"], bins=30, kde=True, color="#0D47A1" )
+plt.title("Distribusi Jumlah Peminjaman Sepeda per Jam")
+plt.xlabel("Jumlah Peminjaman")
+plt.ylabel("Frekuensi")
+plt.show()
 
 # Bar chart - Peminjaman sepeda sepanjang hari (Diperbarui)
 if not filtered_hour.empty:
