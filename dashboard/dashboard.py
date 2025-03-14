@@ -48,8 +48,8 @@ with st.sidebar:
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
 if not filtered_hour.empty:
     st.subheader("Distribusi Jumlah Peminjaman Sepeda per Jam")
-    fig, ax = plt.subplots()
-    plt.figure(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.set_style("whitegrid")
     sns.histplot(filtered_hour["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
     ax.set_xlabel("Jumlah Peminjaman")
     ax.set_ylabel("Frekuensi")
@@ -57,35 +57,63 @@ if not filtered_hour.empty:
     st.pyplot(fig)
 
 
-# Bar chart - Peminjaman sepeda sepanjang hari (Diperbarui)
+# Bar chart - Peminjaman Sepeda per Jam dalam Sehari
 if not filtered_hour.empty:
     st.subheader("Peminjaman Sepeda per Jam dalam Sehari")
     fig, ax = plt.subplots(figsize=(12, 6))
     sns.set_style("whitegrid")
-    hourly_counts = filtered_hour.groupby("hr", as_index=False)["cnt"].mean().sort_values("hr")
+
+    # Menghitung rata-rata peminjaman per jam
+    hourly_counts = filtered_hour.groupby("hr", as_index=False)["cnt"].mean()
+
+    # Menentukan jam dengan peminjaman tertinggi
     max_val = hourly_counts["cnt"].max()
+
+    # Membuat bar chart dengan warna yang ditentukan
     ax.bar(hourly_counts["hr"], hourly_counts["cnt"], 
            color=["#0D47A1" if cnt == max_val else "#BBDEFB" for cnt in hourly_counts["cnt"]])
+
+    # Menyesuaikan label sumbu x
     ax.set_xticks(range(0, 24))
     ax.set_xticklabels([f"{i}:00" for i in range(0, 24)], rotation=45)
     ax.set_xlabel("Jam dalam Sehari")
+    ax.set_ylabel("Rata-rata Jumlah Peminjaman")
     ax.set_title("Peminjaman Sepeda per Jam dalam Sehari")
+
     st.pyplot(fig)
 
-# Bar chart - Tren Peminjaman sepeda berdasarkan hari dalam seminggu
+
+# Bar chart - Tren Peminjaman Sepeda berdasarkan Hari dalam Seminggu
 if not filtered_hour.empty:
-    st.subheader ("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
+    st.subheader("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
     fig, ax = plt.subplots(figsize=(10, 5))
+    sns.set_style("whitegrid")
+
+    # Menghitung rata-rata peminjaman per hari dalam seminggu
     weekday_counts = filtered_hour.groupby("weekday", as_index=False)["cnt"].mean()
-    sns.barplot(x="weekday", y="cnt", hue="weekday", data=filtered_hour, 
-                palette=["#90CAF9" if i == 4 else "#D3D3D3" for i in range(7)], 
-                dodge=False, legend=False, ax=ax)
+
+    # Mapping nama hari
+    weekday_labels = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]
+    weekday_counts["Hari"] = weekday_counts["weekday"].map(lambda x: weekday_labels[x])
+
+    # Menentukan nilai maksimum untuk highlight
+    max_value = weekday_counts["cnt"].max()
+
+    # Tentukan warna: biru muda untuk yang tertinggi, abu-abu untuk yang lain
+    colors = ["#90CAF9" if cnt == max_value else "#D3D3D3" for cnt in weekday_counts["cnt"]]
+
+    # Plot bar chart
+    sns.barplot(x="Hari", y="cnt", data=weekday_counts, palette=colors, ax=ax)
+
+    # Menyesuaikan label sumbu x
     ax.set_xlabel("Hari dalam Seminggu")
-    ax.set_ylabel("Jumlah Peminjaman")
-    ax.set_title("Rata-rata Peminjaman Sepeda Berdasarkan Hari")
-    ax.set_xticks(range(7))
-    ax.set_xticklabels(["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"])
+    ax.set_ylabel("Rata-rata Jumlah Peminjaman")
+    ax.set_title(f"Rata-rata Peminjaman Sepeda Berdasarkan Hari ({start_date} - {end_date})")
+
     st.pyplot(fig)
+
+
+
 
 # Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar (Diperbarui)
 if not filtered_hour.empty:
@@ -102,4 +130,3 @@ if not filtered_hour.empty:
     ax.legend()
     ax.grid(True, linestyle="--", alpha=0.6)
     st.pyplot(fig)
-    
