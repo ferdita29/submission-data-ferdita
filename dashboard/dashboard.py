@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 # Load Dataset
-setdata_hour = pd.read_csv("../data/hour.csv")
+setdata_hour = pd.read_csv("./data/hour.csv")
 df = pd.read_csv("https://raw.githubusercontent.com/ferdita29/submission-data-ferdita/main/dashboard/all_data.csv")
 
 # Convert date column to datetime
@@ -45,14 +45,15 @@ with st.sidebar:
         filtered_df = filtered_df[filtered_df['workingday'] == 0]
 
 # Bar chart - Distribusi jumlah Peminjaman Sepeda Per Jam
-st.subheader("Distribusi Jumlah Peminjaman Sepeda per Jam")
-fig, ax = plt.subplots()
-plt.figure(figsize=(12, 6))
-sns.histplot(filtered_hour["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
-ax.set_xlabel("Jumlah Peminjaman")
-ax.set_ylabel("Frekuensi")
-ax.set_title("Distribusi Jumlah Peminjaman Sepeda per Jam")
-st.pyplot(fig)
+if not filtered_df.empty:
+    st.subheader("Distribusi Jumlah Peminjaman Sepeda per Jam")
+    fig, ax = plt.subplots()
+    plt.figure(figsize=(12, 6))
+    sns.histplot(filtered_df["cnt"], bins=30, kde=True, color="#0D47A1", ax=ax)
+    ax.set_xlabel("Jumlah Peminjaman")
+    ax.set_ylabel("Frekuensi")
+    ax.set_title("Distribusi Jumlah Peminjaman Sepeda per Jam")
+    st.pyplot(fig)
 
 
 # Bar chart - Peminjaman sepeda sepanjang hari (Diperbarui)
