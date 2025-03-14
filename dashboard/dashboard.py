@@ -113,8 +113,6 @@ if not filtered_hour.empty:
     st.pyplot(fig)
 
 
-
-
 # Line Chart - Perbandingan peminjaman antara pengguna kasual dan terdaftar (Diperbarui)
 if not filtered_hour.empty:
     st.subheader("Perbandingan Peminjaman Sepeda: Casual vs Registered Users")
